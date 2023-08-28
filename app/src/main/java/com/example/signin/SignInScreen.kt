@@ -177,7 +177,7 @@ fun MainCardview(navigation:NavController, viewmodel: SignInviewmodel, Signineve
                 modifier = Modifier.padding(top = 28.dp, bottom = 8.dp)
             ) {
 
-                Text(text = "Register Account", modifier = Modifier.padding(8.dp))
+                Text(text ="Log In", modifier = Modifier.padding(8.dp))
 
             }
             Row(

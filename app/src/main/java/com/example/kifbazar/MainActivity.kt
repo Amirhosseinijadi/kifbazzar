@@ -29,6 +29,8 @@ import com.example.utill.MyScreens
 import com.ui.IntroScreen
 import com.example.signup.MainCardview
 import com.example.signup.SignupScreen
+import com.example.utill.KEY_CATEGORY_ARG
+import com.example.utill.KEY_PRODUCT_ARG
 import com.ui.ui.theme.BackgroundMain
 import com.ui.ui.theme.MainAppTheme
 import dev.burnoo.cokoin.Koin
@@ -73,26 +75,28 @@ class MainActivity : ComponentActivity() {
 fun Dunibazarui(){
 
     val navcontroller = rememberNavController()
-    val navhost = KoinNavHost(navController = navcontroller, startDestination = MyScreens.IntroScreen.route ){
+    val navhost = KoinNavHost(navController = navcontroller, startDestination = MyScreens.MainScreen.route ){
 
         composable(MyScreens.MainScreen.route){
 
-            if(TokenInMemory.token == null){
-                IntroScreen()
-            }else{
-                MainScreen()
-            }
+           if(TokenInMemory.token == null){
+               IntroScreen()
+           }else{
+               MainScreen()
+           }
 
         }
-        composable(route = MyScreens.ProductScreen.route, arguments = listOf(navArgument("productid"){
-            type = NavType.IntType
-        })){
-            ProductScreen(it.arguments!!.getInt("productid",-1))
-        }
-        composable(route = MyScreens.CategoryScreen.route, listOf(navArgument("categoryname"){
+        composable(route = MyScreens.ProductScreen.route + "/" + "{$KEY_PRODUCT_ARG}"
+            , arguments = listOf(navArgument(KEY_PRODUCT_ARG){
             type = NavType.StringType
         })){
-            CategoryScreen(it.arguments!!.getString("categoryname","null"))
+            ProductScreen(it.arguments!!.getString(KEY_PRODUCT_ARG,"null"))
+        }
+        composable(route = MyScreens.CategoryScreen.route + "/" + "{$KEY_CATEGORY_ARG}"
+            , listOf(navArgument(KEY_CATEGORY_ARG){
+            type = NavType.StringType
+        })){
+            CategoryScreen(it.arguments!!.getString(KEY_CATEGORY_ARG,"null"))
         }
 
 
@@ -112,21 +116,10 @@ fun Dunibazarui(){
         }
         composable(MyScreens.IntroScreen.route){
             IntroScreen()
-}
-        composable("NoInternetScreen"){
-            NointernetScreen()
         }
+
     }
 }
-
-
-@Composable
-fun NointernetScreen() {
-
-}
-
-
-
 
 
 @Composable
@@ -145,7 +138,7 @@ fun CategoryScreen(categoryname:String) {
 }
 
 @Composable
-fun ProductScreen(productid:Int) {
+fun ProductScreen(productid:String) {
 
 }
 

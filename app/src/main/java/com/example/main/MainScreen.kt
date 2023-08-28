@@ -29,6 +29,7 @@ import com.example.kifbazar.R
 import com.example.model.data.Ads
 import com.example.model.data.Product
 import com.example.utill.CATEGORY
+import com.example.utill.MyScreens
 import com.example.utill.NetworkChecker
 import com.example.utill.TAGS
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -36,6 +37,7 @@ import com.ui.ui.theme.BackgroundMain
 import com.ui.ui.theme.CardViewBackground
 import com.ui.ui.theme.MainAppTheme
 import com.ui.ui.theme.Shapes
+import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -67,9 +69,8 @@ fun MainScreen(){
     }
 
     val viewmodel = getNavViewModel<MainViewModel>(
-        parameters ={parametersOf(NetworkChecker(context).isInternetConnected)}
-
-    )
+        parameters ={parametersOf(NetworkChecker(context).isInternetConnected)})
+    val navigation = getNavController()
     
     Column(modifier = Modifier
         .fillMaxSize()
@@ -84,28 +85,33 @@ fun MainScreen(){
 
         }
 
-        Toptoolbar()
+        Toptoolbar(onCartclicked = {navigation.navigate(MyScreens.CartScreen.route)}, onProfileclicked = {navigation.navigate(MyScreens.ProfileScreen.route)})
 
-        Categorybar(CATEGORY)
+        Categorybar(CATEGORY){
+           navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
+        }
 
         val productDataState = viewmodel.dataproducts
         val adsDataState = viewmodel.dataads
-        Productsubjectlist(TAGS,productDataState.value,adsDataState.value)
+        Productsubjectlist(TAGS,productDataState.value,adsDataState.value){
+                navigation.navigate(MyScreens.ProductScreen.route + "/" + it)
+        }
 
     }
 
 }
 
 @Composable
-fun Productsubjectlist(tags : List<String>,products: List<Product>,ads:List<Ads>) {
+fun Productsubjectlist(tags : List<String>,products: List<Product>,ads:List<Ads>,onProductclicked :(String) -> Unit) {
+    if(products.isNotEmpty()){
     Column {
         tags.forEachIndexed { it, _ ->
             val withtagdata = products.filter { product -> product.tags == tags[it] }
-            ProductSubject(tags[it],withtagdata.shuffled())
+            ProductSubject(tags[it],withtagdata.shuffled(),onProductclicked)
 
             if(ads.size>=2)
                 if(it == 1 || it == 2)
-                    BigpictureTablighat(ads[it - 1])
+                    BigpictureTablighat(ads[it - 1],onProductclicked)
 
 
 
@@ -113,17 +119,18 @@ fun Productsubjectlist(tags : List<String>,products: List<Product>,ads:List<Ads>
 
 }
 }
+}
 
 @Composable
-fun Toptoolbar() {
+fun Toptoolbar(onCartclicked :() -> Unit,onProfileclicked :() -> Unit) {
     
     TopAppBar(elevation = 0.dp,backgroundColor = Color.White,
         title = { Text(text = "Kif bazaar") }, actions = {
-          IconButton(onClick = {}) {
+          IconButton(onClick = {onCartclicked.invoke()}) {
               Icon(Icons.Default.ShoppingCart, contentDescription = null)
 
           }
-            IconButton(onClick = {}) {
+            IconButton(onClick = {onProfileclicked.invoke()}) {
                 
                 Icon(Icons.Default.Person,null)
                 
@@ -134,12 +141,12 @@ fun Toptoolbar() {
 }
 
 @Composable
-fun Categorybar(categorylist:List<Pair<String,Int>>) {
+fun Categorybar(categorylist:List<Pair<String,Int>>,onCategoryclicked :(String) -> Unit) {
 
 LazyRow(modifier = Modifier.padding(16.dp), contentPadding = PaddingValues(end = 16.dp) ){
 
     items(categorylist.size){
-        CategoryItem(categorylist[it])
+        CategoryItem(categorylist[it],onCategoryclicked)
     }
 
 }
@@ -148,10 +155,12 @@ LazyRow(modifier = Modifier.padding(16.dp), contentPadding = PaddingValues(end =
 }
 
 @Composable
-fun CategoryItem(subject:Pair<String,Int>) {
+fun CategoryItem(subject:Pair<String,Int>,onCategoryclicked :(String) -> Unit) {
     Column(modifier = Modifier
         .padding(start = 16.dp)
-        .clickable {}, horizontalAlignment = Alignment.CenterHorizontally ) {
+        .clickable {
+                   onCategoryclicked.invoke(subject.first)
+        }, horizontalAlignment = Alignment.CenterHorizontally ) {
         Surface (shape = Shapes.medium, color = CardViewBackground){
             Image(painter = painterResource(id = subject.second)
                 , contentDescription = null
@@ -163,29 +172,30 @@ fun CategoryItem(subject:Pair<String,Int>) {
 }
 
 @Composable
-fun ProductSubject(subject:String,data:List<Product>) {
+fun ProductSubject(subject:String,data:List<Product>,onProductclicked :(String) -> Unit) {
 
     Column(modifier = Modifier.padding(top = 32.dp)){
         Text(text = subject, modifier = Modifier.padding(start = 16.dp), style = MaterialTheme.typography.h6)
 
-        Productbar(data)
+        Productbar(data,onProductclicked)
     }
 
 }
 
 @Composable
-fun Productbar(data:List<Product>) {
+fun Productbar(data:List<Product>,onProductclicked :(String) -> Unit) {
     LazyRow(modifier = Modifier.padding(top = 16.dp), contentPadding = PaddingValues(end = 16.dp)){
         items(data.size){
-            Productitem(data[it])
+            Productitem(data[it],onProductclicked)
         }
     }
 }
 
 @Composable
-fun Productitem(product:Product) {
+fun Productitem(product:Product,onProductclicked :(String) -> Unit) {
     Card(
         modifier = Modifier
+            .clickable { onProductclicked.invoke(product.productId) }
             .padding(start = 16.dp)
             , elevation = 4.dp, shape = Shapes.large) {
 
@@ -226,9 +236,10 @@ fun Productitem(product:Product) {
 
 
 @Composable
-fun BigpictureTablighat(ads: Ads) {
+fun BigpictureTablighat(ads: Ads,onProductclicked :(String) -> Unit) {
 
     AsyncImage(modifier = Modifier
+        .clickable { onProductclicked.invoke(ads.productId) }
         .padding(16.dp)
         .fillMaxWidth()
         .height(260.dp), model = ads.imageURL, contentDescription = null, contentScale = ContentScale.Crop )
