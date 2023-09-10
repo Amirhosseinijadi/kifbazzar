@@ -1,8 +1,6 @@
 package com.example.model.net
 
-import com.example.model.data.AdsResponse
-import com.example.model.data.LoginResponse
-import com.example.model.data.ProductResponse
+import com.example.model.data.*
 import com.example.model.repository.TokenInMemory
 import com.example.utill.BASE_URL
 import com.google.gson.JsonObject
@@ -31,6 +29,12 @@ interface ApiService {
 
    @GET("getSliderPics")
    suspend fun getallads():AdsResponse
+
+   @POST("getComments")
+   suspend fun getAllComments( @Body jsonObject: JsonObject ):CommentResponse
+
+    @POST("addNewComment")
+    suspend fun addNewComment(@Body jsonObject: JsonObject): AddNewCommentResponse
 
 
 

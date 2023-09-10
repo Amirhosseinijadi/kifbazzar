@@ -10,11 +10,16 @@ import com.example.model.data.Product
 interface ProductDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-     fun insertorupdate(products : List<Product>)
+      fun insertorupdate(products : List<Product>)
 
     @Query("SELECT * FROM product_table")
-    fun getall():List<Product>
+     fun getall():List<Product>
 
     @Query("SELECT * FROM product_table WHERE productId = :productId")
-     fun getbyID(productId:String):Product
+      fun getProductbyID(productId:String):Product
+
+    @Query("SELECT * FROM product_table WHERE category = :category")
+     fun getallByCategory(category: String): List<Product>
+
+
 }

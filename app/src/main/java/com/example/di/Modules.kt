@@ -3,13 +3,12 @@ package com.example.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.category.CategoryViewmodel
 import com.example.main.MainViewModel
 import com.example.model.db.AppDatabase
 import com.example.model.net.createApiService
-import com.example.model.repository.ProductRepository
-import com.example.model.repository.ProductRepositoryIMPL
-import com.example.model.repository.UserRepository
-import com.example.model.repository.UserRepositoryIMPL
+import com.example.model.repository.*
+import com.example.product.ProductViewmodel
 import com.example.signin.SignInviewmodel
 import com.example.signup.SignUpviewmodel
 import org.koin.android.ext.koin.androidContext
@@ -33,11 +32,12 @@ val mymodules = module {
     }
 
     single<UserRepository> { UserRepositoryIMPL(get(),get()) }
-
+    single<CommentRepository>{CommentRepositoryIMPL(get())}
+    viewModel { ProductViewmodel(get(),get()) }
     viewModel {SignUpviewmodel(get())}
     viewModel { SignInviewmodel(get()) }
-
     viewModel { (isnetconnected:Boolean) -> MainViewModel(get(),isnetconnected) }
+    viewModel { CategoryViewmodel(get()) }
 
 
 

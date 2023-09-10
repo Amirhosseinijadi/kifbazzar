@@ -40,4 +40,12 @@ class ProductRepositoryIMPL(private val apiService: ApiService,private val produ
         return listOf()
 
     }
+
+    override suspend fun getallproductsbyCategory(category: String): List<Product> {
+        return productDao.getallByCategory(category)
+    }
+
+    override suspend fun getProductbyID(productId: String): Product {
+        return productDao.getProductbyID(productId)
+    }
 }

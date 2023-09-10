@@ -20,10 +20,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.category.CategoryScreen
 import com.example.di.mymodules
 import com.example.main.MainScreen
 import com.example.model.repository.TokenInMemory
 import com.example.model.repository.UserRepository
+import com.example.product.ProductScreen
 import com.example.signin.SigninScreen
 import com.example.utill.MyScreens
 import com.ui.IntroScreen
@@ -96,7 +98,7 @@ fun Dunibazarui(){
             , listOf(navArgument(KEY_CATEGORY_ARG){
             type = NavType.StringType
         })){
-            CategoryScreen(it.arguments!!.getString(KEY_CATEGORY_ARG,"null"))
+            CategoryScreen(it.arguments!!.getString(KEY_CATEGORY_ARG, "null"))
         }
 
 
@@ -132,15 +134,8 @@ fun CartScreen() {
 
 }
 
-@Composable
-fun CategoryScreen(categoryname:String) {
 
-}
 
-@Composable
-fun ProductScreen(productid:String) {
-
-}
 
 
 
